@@ -29,17 +29,8 @@ class ChessGame {
   };
 
   findValidMoves(color) {
-
-    switch color {
-      case "black":
-        let pieces = this.blackPieces;
-        let king = this.blackKing;
-        break;
-      case "white":
-        let king = this.whiteKing;
-        let pieces = this.whitePieces;
-        break;
-    }
+    let pieces = color === "black" ? this.blackPieces : this.whitePieces;
+    let king = color === "black" ? this.blackKing : this.whiteKing;
 
     let that = this;
     let validMoves = [];
@@ -65,8 +56,7 @@ class ChessGame {
     piece.moveDirections.forEach((direction) => {
       let newPos = [piece.pos[0] + direction[0], piece.pos[1] + direction[1]];
       if (piece.moveLimit) {
-        if ((this.openSquare(newPos) || this.validCapture(newPos, piece.color)
-        && !putsInCheck(piece.pos, newPos, piece.color)) {
+        if ((this.openSquare(newPos) || this.validCapture(newPos, piece.color)) && !putsInCheck(piece.pos, newPos, piece.color)) {
           validMoves.push([piece.pos, newPos]);
         }
       } else {
@@ -85,6 +75,7 @@ class ChessGame {
     return validMoves;
   };
 
+  // takes in a move (oldPos -> newPos) and checks if color is in check after that move
   putsInCheck(oldPos, newPos, color) {
     let boardCopy = this.boardState.slice(0);
     let kingPos = this.color == "black" ? this.blackKing : this.whiteKing;
@@ -95,13 +86,23 @@ class ChessGame {
     let opposingPieces = color == "black" ? this.whitePieces : this.blackPieces;
 
     opposingPieces.forEach((piece) => {
-      return true if this.validCapture(piece.pos, kingPos);
+      if (this.validCapture(piece.pos, kingPos)) {
+        return true;
+      };
     }).bind(this);
 
     return false;
   };
 
+  // this method assumes no obstructing pieces -- that is for Piece.validMoves() to do
   validCapture(attackPos, preyPos) {
-    
-  }
+    let attackPiece = this.boardState[attackPos[0]][attackPos[1]];
+    let preyPiece = this.boardState[preyPos[0]][preyPos[1]];
+
+    if (!attackPiece || !preyPiece) {
+      return false;
+    } else {      
+      return attackPiece.color !== preyPiece.color;
+    }
+  };
 }

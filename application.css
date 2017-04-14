@@ -1,0 +1,35 @@
+.gameboard-container {
+  display: flex;
+  flex-flow: column;
+}
+
+.board-row {
+  display: flex;
+  flex-flow: row;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+}
+
+.square {
+  width: 50px;
+  height: 50px;
+}
+
+.black-square {
+  background-color: rgba(158, 158, 158, 0.91);
+}
+
+.white-square {
+  background-color: rgba(158, 158, 158, 0.18);
+}
+
+.black-piece {
+  color: #bd0711;
+}
+
+.white-piece {
+  color: #bb9b69;
+}
