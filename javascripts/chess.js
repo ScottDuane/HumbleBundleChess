@@ -54,19 +54,54 @@ class ChessGame {
     return validMoves;
   };
 
+  // seems like there's a cleaner way to do this
+  // consider a function on piece.js that returns the list of possible next squares,
+  // based on piece's starting position
+  // loop through this list, breaking when another piece is hit
+  // use an index in a while loop with the condition this.openSquare(newPos) while newPos is next on the list of
+  // piece's available moves
   findValidMovesByPiece(piece) {
-    let boardCopy = this.boardState.slice(0);
-    // refactor: instead of getMoveCandidates, getMoveLimit (boolean that determines whether more than one step is ok),
-    // and getVectors, determining which direction piece can move
-    piece.getMoveCandidates().forEach((candidate) => {
-      // based on each vector/limit combo (iterator inside while loop for unlimited; iterator for limited) do:
-      // check if space is a capture
-      // check if the space is vacant
-      // check if the board is in check from that move
+    let validMoves = [];
+    piece.moveDirections.forEach((direction) => {
+      let newPos = [piece.pos[0] + direction[0], piece.pos[1] + direction[1]];
+      if (piece.moveLimit) {
+        if ((this.openSquare(newPos) || this.validCapture(newPos, piece.color)
+        && !putsInCheck(piece.pos, newPos, piece.color)) {
+          validMoves.push([piece.pos, newPos]);
+        }
+      } else {
+        while (this.openSquare(newPos)) {
+          validMoves.push([piece.pos, newPos]);
+          newPos[0] += direction[0];
+          newPos[1] += direction[1];
+        }
+
+        if (this.validCapture(newPos, piece.color)) {
+          validMoves.push([piece.pos, newPos]);
+        }
+      }
     });
+
+    return validMoves;
   };
 
-  inCheck(color) {
+  putsInCheck(oldPos, newPos, color) {
+    let boardCopy = this.boardState.slice(0);
+    let kingPos = this.color == "black" ? this.blackKing : this.whiteKing;
+    kingPos = kingPos == oldPos ? newPos : kingPos;
 
+    boardCopy[newPos[0]][newPos[1]] = boardCopy[oldPos[0]][oldPos[1]];
+    boardCopy[oldPos[0]][oldPos[1]] = null;
+    let opposingPieces = color == "black" ? this.whitePieces : this.blackPieces;
+
+    opposingPieces.forEach((piece) => {
+      return true if this.validCapture(piece.pos, kingPos);
+    }).bind(this);
+
+    return false;
   };
+
+  validCapture(attackPos, preyPos) {
+    
+  }
 }
