@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let gameView = new GameView(chessGame, boardContainer);
   InitialConditions.forEach((boardState) => {
     chessGame.receiveNewBoard(boardState);
-    gameView.renderValidMoves(boardState.turnColor);
+    gameView.renderValidMoves(boardState.color);
     window.setTimeout(() => {});
   });
 

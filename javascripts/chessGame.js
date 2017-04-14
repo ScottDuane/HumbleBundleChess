@@ -1,14 +1,15 @@
 class ChessGame {
   constructor () {
     this.boardState = [];
-    this.blackPieces = [];
-    this.whitePieces = [];
-    this.blackKing = null;
-    this.whiteKing = null;
     this.resetBoard();
   };
 
   resetBoard () {
+    this.whitePieces = [];
+    this.blackPieces = [];
+    this.blackKing = null;
+    this.whiteKing = null;
+
     for (let i=0; i<8; i++) {
       this.boardState.push([]);
       for (let j=0; j<8; j++) {
@@ -17,11 +18,25 @@ class ChessGame {
     };
   };
 
-  receiveNewBoard(board) {
+  receiveNewBoard(boardState) {
       // takes in positions of pieces
       // creates pieces
       // places pieces into the blank board state
       this.resetBoard();
+      let that = this;
+      boardState.pieces.forEach((pieceAttributes) => {
+        let piece = new Piece(pieceAttributes.type, pieceAttributes.color, pieceAttributes.pos, that);
+        let pieceSet = boardState.color === "black" ? that.blackPieces : that.whitePieces;
+        pieceSet.push(piece);
+
+        that.boardState[pieceAttributes.pos[0]][pieceAttributes[1]] = piece;
+        if (pieceAttributes.type === "king") {
+          let king = boardState.color === "black" ? that.blackKing : that.whiteKing;
+          king = piece;
+        }
+      });
+
+
   };
 
   updateBoardState(boardState) {
@@ -56,7 +71,7 @@ class ChessGame {
     piece.moveDirections.forEach((direction) => {
       let newPos = [piece.pos[0] + direction[0], piece.pos[1] + direction[1]];
       if (piece.moveLimit) {
-        if ((this.openSquare(newPos) || this.validCapture(newPos, piece.color)) && !putsInCheck(piece.pos, newPos, piece.color)) {
+        if ((this.openSquare(newPos) || this.validCapture(piece.pos, newPos)) && !putsInCheck(piece.pos, newPos, piece.color)) {
           validMoves.push([piece.pos, newPos]);
         }
       } else {
@@ -66,7 +81,7 @@ class ChessGame {
           newPos[1] += direction[1];
         }
 
-        if (this.validCapture(newPos, piece.color)) {
+        if (this.validCapture(piece.pos, newPos)) {
           validMoves.push([piece.pos, newPos]);
         }
       }
@@ -94,6 +109,10 @@ class ChessGame {
     return false;
   };
 
+  openSquare(pos) {
+    return !!this.boardState[pos[0]][pos[1]];
+  };
+
   // this method assumes no obstructing pieces -- that is for Piece.validMoves() to do
   validCapture(attackPos, preyPos) {
     let attackPiece = this.boardState[attackPos[0]][attackPos[1]];
@@ -101,7 +120,7 @@ class ChessGame {
 
     if (!attackPiece || !preyPiece) {
       return false;
-    } else {      
+    } else {
       return attackPiece.color !== preyPiece.color;
     }
   };

@@ -1,4 +1,4 @@
 let InitialConditions = [
-                          { pieces: [["pawn", "black", [0, 0]], ["pawn", "white", [1,0]]], color: "black" },
-                          { pieces: [["king", "white", [2, 2]], ["queen", "white", [1, 1]]], color: "white" }
+                          { pieces: [{ type: "pawn", color: "black", pos: [0, 0]}, { type: "pawn", color: "white", pos: [1,0] } ], color: "black" },
+                          { pieces: [{ type: "king", color: "white", pos: [2, 2]}, { type: "queen", color: "white", pos: [1, 1] }], color: "white" }
                         ];

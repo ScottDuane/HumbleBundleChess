@@ -25,6 +25,7 @@ class GameView  {
 
   renderValidMoves(color) {
     let moves = this.chessGame.findValidMoves(color);
+    debugger;
     moves.forEach((move) => {
       let startId = move.startPos[0].toString() + " " + move.startPos[1].toString();
       let endId = move.endPos[0].toString() + " " + move.endPos[1].toString();
@@ -35,8 +36,6 @@ class GameView  {
 
       startSquare.className += "active-square";
       endSquare.className += "active-square";
-
-      
     })
   }
 }
