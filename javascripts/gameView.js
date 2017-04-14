@@ -16,6 +16,13 @@ class GameView  {
         let square = document.createElement("li");
         square.className = "square " + COLOR_CLASSES[(i + j) % 2];
         square.id = i.toString() + " " + j.toString();
+
+        if (this.chessGame.boardState[i][j]) {
+          let piece = document.createElement("p");
+          piece.text = "piece";
+          square.childNodes.push(piece);
+        }
+
         row.append(square);
       }
 
@@ -25,7 +32,6 @@ class GameView  {
 
   renderValidMoves(color) {
     let moves = this.chessGame.findValidMoves(color);
-    debugger;
     moves.forEach((move) => {
       let startId = move.startPos[0].toString() + " " + move.startPos[1].toString();
       let endId = move.endPos[0].toString() + " " + move.endPos[1].toString();
