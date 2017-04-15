@@ -9,6 +9,7 @@ class ChessGame {
     this.blackPieces = [];
     this.blackKing = null;
     this.whiteKing = null;
+    this.boardState = [];
 
     for (let i=0; i<8; i++) {
       this.boardState.push([]);
@@ -29,7 +30,7 @@ class ChessGame {
         let pieceSet = boardState.color === "black" ? that.blackPieces : that.whitePieces;
         pieceSet.push(piece);
 
-        that.boardState[pieceAttributes.pos[0]][pieceAttributes[1]] = piece;
+        that.boardState[pieceAttributes.pos[0]][pieceAttributes.pos[1]] = piece;
         if (pieceAttributes.type === "king") {
           let king = boardState.color === "black" ? that.blackKing : that.whiteKing;
           king = piece;
@@ -39,9 +40,6 @@ class ChessGame {
 
   };
 
-  updateBoardState(boardState) {
-    this.boardState = boardState;
-  };
 
   findValidMoves(color) {
     let pieces = color === "black" ? this.blackPieces : this.whitePieces;
@@ -49,8 +47,9 @@ class ChessGame {
 
     let that = this;
     let validMoves = [];
-
+    debugger;
     pieces.forEach((piece) => {
+      debugger;
       let moves = that.findValidMovesByPiece(piece);
       moves.forEach((move) => {
         validMoves.push(move);
@@ -71,18 +70,18 @@ class ChessGame {
     piece.moveDirections.forEach((direction) => {
       let newPos = [piece.pos[0] + direction[0], piece.pos[1] + direction[1]];
       if (piece.moveLimit) {
-        if ((this.openSquare(newPos) || this.validCapture(piece.pos, newPos)) && !putsInCheck(piece.pos, newPos, piece.color)) {
-          validMoves.push([piece.pos, newPos]);
+        if ((this.openSquare(newPos) || this.validCapture(piece.pos, newPos)) && !this.putsInCheck(piece.pos, newPos, piece.color)) {
+          validMoves.push({ startPos: piece.pos, endPos: newPos });
         }
       } else {
         while (this.openSquare(newPos)) {
-          validMoves.push([piece.pos, newPos]);
+          validMoves.push({startPos: piece.pos, endPos: newPos } );
           newPos[0] += direction[0];
           newPos[1] += direction[1];
         }
 
         if (this.validCapture(piece.pos, newPos)) {
-          validMoves.push([piece.pos, newPos]);
+          validMoves.push({ startPos: piece.pos, endPos:  newPos });
         }
       }
     });
@@ -99,12 +98,13 @@ class ChessGame {
     boardCopy[newPos[0]][newPos[1]] = boardCopy[oldPos[0]][oldPos[1]];
     boardCopy[oldPos[0]][oldPos[1]] = null;
     let opposingPieces = color == "black" ? this.whitePieces : this.blackPieces;
+    let that = this;
 
     opposingPieces.forEach((piece) => {
-      if (this.validCapture(piece.pos, kingPos)) {
+      if (that.validCapture(piece.pos, kingPos)) {
         return true;
       };
-    }).bind(this);
+    });
 
     return false;
   };

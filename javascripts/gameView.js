@@ -6,6 +6,10 @@ class GameView  {
   };
 
   renderInitialBoard() {
+    while (this.boardContainer.hasChildNodes()) {
+      this.boardContainer.removeChild(this.boardContainer.lastChild);
+    }
+
     let COLOR_CLASSES = ["black-square", "white-square"];
 
     for (let i=0; i<8; i++) {
@@ -16,11 +20,10 @@ class GameView  {
         let square = document.createElement("li");
         square.className = "square " + COLOR_CLASSES[(i + j) % 2];
         square.id = i.toString() + " " + j.toString();
-
         if (this.chessGame.boardState[i][j]) {
           let piece = document.createElement("p");
           piece.text = "piece";
-          square.childNodes.push(piece);
+          square.append(piece);
         }
 
         row.append(square);
