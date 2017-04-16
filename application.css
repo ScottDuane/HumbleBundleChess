@@ -8,14 +8,27 @@
   flex-flow: row;
 }
 
+
+.row-label {
+  width: 70px;
+  text-align: center;
+}
+
+.column-label {
+  width: 70px;
+  padding-top: 30px;
+  margin-right: 2px;
+}
+
 ul {
   list-style: none;
   margin: 0;
 }
 
 .square {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
+  transition: background-color 800ms linear 800ms;
 }
 
 .black-square {
@@ -26,10 +39,12 @@ ul {
   background-color: rgba(158, 158, 158, 0.18);
 }
 
-.black-piece {
-  color: #bd0711;
+.active-square {
+  background-color: magenta;
 }
 
-.white-piece {
-  color: #bb9b69;
+.piece-icon {
+  width: 60px;
+  height: 60px;
+  margin: 5px;
 }

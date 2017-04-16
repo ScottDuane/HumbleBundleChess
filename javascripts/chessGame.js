@@ -1,3 +1,7 @@
+import NonRepeatingPiece from './pieces/nonRepeatingPiece';
+import RepeatingPiece from './pieces/repeatingPiece';
+import { IS_REPEATING } from './util';
+
 class ChessGame {
   constructor () {
     this.boardState = [];
@@ -20,70 +24,38 @@ class ChessGame {
   };
 
   receiveNewBoard(boardState) {
-      // takes in positions of pieces
-      // creates pieces
-      // places pieces into the blank board state
       this.resetBoard();
       let that = this;
       boardState.pieces.forEach((pieceAttributes) => {
-        let piece = new Piece(pieceAttributes.type, pieceAttributes.color, pieceAttributes.pos, that);
+        let piece = null;
+
+        if (IS_REPEATING[pieceAttributes.pieceType]) {
+          piece = new RepeatingPiece(pieceAttributes.pieceType, pieceAttributes.color, pieceAttributes.pos, that);
+        } else {
+          piece = new NonRepeatingPiece(pieceAttributes.pieceType, pieceAttributes.color, pieceAttributes.pos, that)
+        }
+
         let pieceSet = boardState.color === "black" ? that.blackPieces : that.whitePieces;
         pieceSet.push(piece);
 
         that.boardState[pieceAttributes.pos[0]][pieceAttributes.pos[1]] = piece;
-        if (pieceAttributes.type === "king") {
+        if (pieceAttributes.pieceType === "king") {
           let king = boardState.color === "black" ? that.blackKing : that.whiteKing;
           king = piece;
         }
       });
-
-
   };
-
 
   findValidMoves(color) {
     let pieces = color === "black" ? this.blackPieces : this.whitePieces;
     let king = color === "black" ? this.blackKing : this.whiteKing;
-
-    let that = this;
     let validMoves = [];
-    debugger;
+
     pieces.forEach((piece) => {
-      debugger;
-      let moves = that.findValidMovesByPiece(piece);
+      let moves = piece.getValidMoves();
       moves.forEach((move) => {
         validMoves.push(move);
       });
-    });
-
-    return validMoves;
-  };
-
-  // seems like there's a cleaner way to do this
-  // consider a function on piece.js that returns the list of possible next squares,
-  // based on piece's starting position
-  // loop through this list, breaking when another piece is hit
-  // use an index in a while loop with the condition this.openSquare(newPos) while newPos is next on the list of
-  // piece's available moves
-  findValidMovesByPiece(piece) {
-    let validMoves = [];
-    piece.moveDirections.forEach((direction) => {
-      let newPos = [piece.pos[0] + direction[0], piece.pos[1] + direction[1]];
-      if (piece.moveLimit) {
-        if ((this.openSquare(newPos) || this.validCapture(piece.pos, newPos)) && !this.putsInCheck(piece.pos, newPos, piece.color)) {
-          validMoves.push({ startPos: piece.pos, endPos: newPos });
-        }
-      } else {
-        while (this.openSquare(newPos)) {
-          validMoves.push({startPos: piece.pos, endPos: newPos } );
-          newPos[0] += direction[0];
-          newPos[1] += direction[1];
-        }
-
-        if (this.validCapture(piece.pos, newPos)) {
-          validMoves.push({ startPos: piece.pos, endPos:  newPos });
-        }
-      }
     });
 
     return validMoves;
@@ -100,17 +72,26 @@ class ChessGame {
     let opposingPieces = color == "black" ? this.whitePieces : this.blackPieces;
     let that = this;
 
+    // annoyingly verbose in order to avoid checking equality for object id instead of coordinate equality
+    // essentially just checking if any of the opposingPieces can capture the king
     opposingPieces.forEach((piece) => {
-      if (that.validCapture(piece.pos, kingPos)) {
-        return true;
-      };
+      piece.getValidMoves.forEach((move) => {
+        if ((move.startPos[0] === piece.pos[0] && move.startPos[1] === piece.pos[1]) &&
+            (move.endPos[0] === kingPos[0] && move.endPos[1] === kingPos[1])) {
+          return true;
+        }
+      })
     });
 
     return false;
   };
 
+  validCoordinates(pos) {
+    return (pos[0] < 8 && pos[1] < 8) && (pos[0] >= 0 && pos[1] >= 0);
+  };
+
   openSquare(pos) {
-    return !!this.boardState[pos[0]][pos[1]];
+    return !this.boardState[pos[0]][pos[1]];
   };
 
   // this method assumes no obstructing pieces -- that is for Piece.validMoves() to do
@@ -125,3 +106,5 @@ class ChessGame {
     }
   };
 }
+
+export default ChessGame;
