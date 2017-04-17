@@ -11,11 +11,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let errors = chessGame.checkBoardForErrors(INITIAL_CONDITION);
 
   if (!errors) {
-      gameView.renderInitialBoard();
-      gameView.renderInitialList();
-      gameView.renderPieces();
-      gameView.renderValidMoves(INITIAL_CONDITION.color);
-
+    gameView.renderInitialBoard();
+    gameView.renderInitialList();
+    gameView.renderPieces();
+    gameView.renderValidMoves(INITIAL_CONDITION.color);
   } else {
     gameView.renderErrorMessage(errors);
   }

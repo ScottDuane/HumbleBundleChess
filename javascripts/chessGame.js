@@ -12,7 +12,6 @@ class ChessGame {
   };
 
   parseInitialCondition () {
-    // refactor error handling
     INITIAL_CONDITION.pieces.forEach((pieceInfo) => {
       pieceInfo.board = this.board;
       let piece = IS_REPEATING[pieceInfo.pieceType] ? new RepeatingPiece(pieceInfo) : new NonRepeatingPiece(pieceInfo);

@@ -1,4 +1,4 @@
-import { SQUARE_CLASSES, LETTERS } from './util';
+import { SQUARE_CLASSES, LETTERS, INITIAL_CONDITION } from './util';
 
 class GameView  {
   constructor (chessGame, boardContainer, listContainer, nextButton) {
@@ -11,14 +11,16 @@ class GameView  {
   renderInitialList() {
     let listTitle = document.createElement("h2");
     let emptyList = document.createElement("ul");
-    listTitle.textContent = "Valid Moves";
+    listTitle.textContent = INITIAL_CONDITION.color + "'s valid moves";
+    listTitle.className = "list-header";
+    emptyList.className = "move-list";
     this.moveListContainer.append(listTitle);
     this.moveListContainer.append(emptyList);
   };
 
   renderInitialBoard() {
     let labelRow = document.createElement("ul");
-    labelRow.className = "board-row";
+    labelRow.className = "board-row column-label-row";
 
     for (let k=1; k<=8; k++) {
       let columnLabel = document.createElement("li");
@@ -97,7 +99,7 @@ class GameView  {
       let pieceType = that.chessGame.board.getBoardLocation(move.startPos[0], move.startPos[1]).pieceType;
       let endCoord = (move.endPos[1] + 1).toString();
       newMoveElement.textContent = pieceType + " to " + LETTERS[move.endPos[0]] + endCoord;
-      that.moveListContainer.firstChild.append(newMoveElement);
+      that.moveListContainer.lastChild.append(newMoveElement);
     })
   }
 }

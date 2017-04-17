@@ -1,6 +1,12 @@
 body {
   display: flex;
   flex-flow: row;
+  font-family: 'Asar', serif;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
 }
 
 .gameboard-container {
@@ -8,26 +14,53 @@ body {
   flex-flow: column;
 }
 
+.move-list-container {
+  font-family:
+}
+
+.list-header {
+  margin-left: 40px;
+}
+
+.move-list li {
+  width: 110px;
+}
+
+.move-list {
+  list-style: none;
+  font-size: 16px;
+  display: flex;
+  flex-flow: column;
+  flex-wrap: wrap;
+  max-height: 250px;
+}
+
+.error-list {
+
+}
+
 .board-row {
   display: flex;
   flex-flow: row;
 }
 
-
 .row-label {
-  width: 70px;
+  width: 25px;
+  padding-top: 20px;
   text-align: center;
+}
+
+.column-label-row {
+  margin-left: 55px;
 }
 
 .column-label {
   width: 70px;
   padding-top: 30px;
-  margin-right: 2px;
 }
 
-ul {
-  list-style: none;
-  margin: 0;
+.error-list-container {
+  display: none;
 }
 
 .square {

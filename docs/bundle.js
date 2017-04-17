@@ -60,10 +60,10 @@
 /******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
 /******/
 /******/ 	// __webpack_public_path__
-/******/ 	__webpack_require__.p = "";
+/******/ 	__webpack_require__.p = "/HumbleBundleChess/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -74,29 +74,32 @@
 
 
 Object.defineProperty(exports, "__esModule", {
-                            value: true
+                                     value: true
 });
-var INITIAL_CONDITIONS = [{ pieces: [{ pieceType: "knight", color: "black", pos: [0, 0] }], color: "black" }];
+var INITIAL_CONDITION = { pieces: [{ pieceType: "knight", color: "white", pos: [0, 0] }, { pieceType: "rook", color: "black", pos: [0, 4] }, { pieceType: "king", color: "black", pos: [0, 7] }, { pieceType: "rook", color: "white", pos: [1, 5] }, { pieceType: "pawn", color: "black", pos: [1, 6] }, { pieceType: "pawn", color: "white", pos: [2, 5] }, { pieceType: "pawn", color: "black", pos: [2, 7] }, { pieceType: "bishop", color: "white", pos: [4, 7] }, { pieceType: "queen", color: "white", pos: [6, 4] }, { pieceType: "king", color: "white", pos: [7, 4] }],
+                                     color: "white" };
 
-var MOVEMENT_VECTORS = { "pawn": [[0, 1]],
-                            "knight": [[1, 2], [-1, 2], [2, 1], [-2, 1], [1, -2], [-1, -2], [-2, -1], [2, -1]],
-                            "bishop": [[1, 1], [1, -1], [-1, 1], [-1, -1]],
-                            "rook": [[1, 0], [0, 1], [-1, 0], [0, -1]],
-                            "queen": [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]],
-                            "king": [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]] };
+var INITIAL_CONDITION_2 = { pieces: [{ pieceType: "king", color: "white", pos: [0, 0] }, { pieceType: "king", color: "black", pos: [7, 7] }, { pieceType: "knight", color: "white", pos: [1, 1] }, { pieceType: "bishop", color: "black", pos: [2, 2] }], color: "white" };
 
-var SQUARE_CLASSES = ["black-square", "white-square"];
+var MOVEMENT_VECTORS = { "pawn": [[1, 0]],
+                                     "knight": [[1, 2], [-1, 2], [2, 1], [-2, 1], [1, -2], [-1, -2], [-2, -1], [2, -1]],
+                                     "bishop": [[1, 1], [1, -1], [-1, 1], [-1, -1]],
+                                     "rook": [[1, 0], [0, 1], [-1, 0], [0, -1]],
+                                     "queen": [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]],
+                                     "king": [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]] };
+
+var SQUARE_CLASSES = ["white-square", "black-square"];
 
 var IS_REPEATING = { pawn: false,
-                            knight: false,
-                            bishop: true,
-                            rook: true,
-                            queen: true,
-                            king: false };
+                                     knight: false,
+                                     bishop: true,
+                                     rook: true,
+                                     queen: true,
+                                     king: false };
 
 var LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
-exports.INITIAL_CONDITIONS = INITIAL_CONDITIONS;
+exports.INITIAL_CONDITION = INITIAL_CONDITION;
 exports.MOVEMENT_VECTORS = MOVEMENT_VECTORS;
 exports.SQUARE_CLASSES = SQUARE_CLASSES;
 exports.IS_REPEATING = IS_REPEATING;
@@ -113,20 +116,69 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Piece = function Piece(pieceType, color, pos, chessGame) {
-  _classCallCheck(this, Piece);
+var Board = function () {
+  function Board() {
+    _classCallCheck(this, Board);
 
-  this.color = color;
-  this.pieceType = pieceType;
-  this.pos = pos;
-  this.chessGame = chessGame;
-};
+    this.board = [];
+    this.buildEmptyBoard();
+  }
 
-;
+  _createClass(Board, [{
+    key: "buildEmptyBoard",
+    value: function buildEmptyBoard() {
+      for (var i = 0; i < 8; i++) {
+        this.board.push([]);
+        for (var j = 0; j < 8; j++) {
+          this.board[i].push(null);
+        }
+      }
+    }
+  }, {
+    key: "getBoardLocation",
+    value: function getBoardLocation(x, y) {
+      return this.board[x][y];
+    }
+  }, {
+    key: "setBoardLocation",
+    value: function setBoardLocation(piece, move) {
+      this.board[move[0]][move[1]] = piece;
+    }
+  }, {
+    key: "validCoordinates",
+    value: function validCoordinates(x, y) {
+      return x >= 0 && y >= 0 && x < 8 && y < 8;
+    }
+  }, {
+    key: "openSquare",
+    value: function openSquare(x, y) {
+      return this.validCoordinates(x, y) && !this.board[x][y];
+    }
+  }, {
+    key: "occupiedSquare",
+    value: function occupiedSquare(x, y) {
+      return this.validCoordinates(x, y) && this.board[x][y];
+    }
+  }, {
+    key: "colorOf",
+    value: function colorOf(x, y) {
+      return this.board[x][y] ? this.board[x][y].color : null;
+    }
+  }, {
+    key: "validCapture",
+    value: function validCapture(attackCoord, preyCoord) {
+      return this.occupiedSquare(preyCoord[0], preyCoord[1]) && this.colorOf(attackCoord[0], attackCoord[1]) !== this.colorOf(preyCoord[0], preyCoord[1]);
+    }
+  }]);
 
-exports.default = Piece;
+  return Board;
+}();
+
+exports.default = Board;
 
 /***/ }),
 /* 2 */
@@ -141,11 +193,56 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _nonRepeatingPiece = __webpack_require__(5);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Piece = function () {
+  function Piece(attrs) {
+    _classCallCheck(this, Piece);
+
+    this.color = attrs.color;
+    this.pieceType = attrs.pieceType;
+    this.pos = attrs.pos;
+    this.board = attrs.board;
+  }
+
+  _createClass(Piece, [{
+    key: "setLocation",
+    value: function setLocation(pos) {
+      this.pos = pos;
+    }
+  }]);
+
+  return Piece;
+}();
+
+;
+
+exports.default = Piece;
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _board = __webpack_require__(1);
+
+var _board2 = _interopRequireDefault(_board);
+
+var _nonRepeatingPiece = __webpack_require__(6);
 
 var _nonRepeatingPiece2 = _interopRequireDefault(_nonRepeatingPiece);
 
-var _repeatingPiece = __webpack_require__(6);
+var _repeatingPiece = __webpack_require__(7);
 
 var _repeatingPiece2 = _interopRequireDefault(_repeatingPiece);
 
@@ -156,120 +253,143 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var ChessGame = function () {
-  function ChessGame() {
+  function ChessGame(gameView) {
     _classCallCheck(this, ChessGame);
 
-    this.boardState = [];
-    this.resetBoard();
+    this.board = new _board2.default();
+    this.pieces = [];
+    this.gameView = gameView;
+    this.parseInitialCondition();
   }
 
   _createClass(ChessGame, [{
-    key: 'resetBoard',
-    value: function resetBoard() {
-      this.whitePieces = [];
-      this.blackPieces = [];
-      this.blackKing = null;
-      this.whiteKing = null;
-      this.boardState = [];
+    key: 'parseInitialCondition',
+    value: function parseInitialCondition() {
+      var _this = this;
 
-      for (var i = 0; i < 8; i++) {
-        this.boardState.push([]);
-        for (var j = 0; j < 8; j++) {
-          this.boardState[i].push(null);
-        };
-      };
+      _util.INITIAL_CONDITION.pieces.forEach(function (pieceInfo) {
+        pieceInfo.board = _this.board;
+        var piece = _util.IS_REPEATING[pieceInfo.pieceType] ? new _repeatingPiece2.default(pieceInfo) : new _nonRepeatingPiece2.default(pieceInfo);
+        _this.pieces.push(piece);
+        _this.board.setBoardLocation(piece, pieceInfo.pos);
+      });
     }
   }, {
-    key: 'receiveNewBoard',
-    value: function receiveNewBoard(boardState) {
-      this.resetBoard();
-      var that = this;
-      boardState.pieces.forEach(function (pieceAttributes) {
-        var piece = null;
+    key: 'inCheck',
+    value: function inCheck(color) {
+      var king = this.getKing(color);
+      var oppColor = color === "white" ? "black" : "white";
+      var result = false;
 
-        if (_util.IS_REPEATING[pieceAttributes.pieceType]) {
-          piece = new _repeatingPiece2.default(pieceAttributes.pieceType, pieceAttributes.color, pieceAttributes.pos, that);
-        } else {
-          piece = new _nonRepeatingPiece2.default(pieceAttributes.pieceType, pieceAttributes.color, pieceAttributes.pos, that);
+      this.getPieceSet(oppColor).forEach(function (piece) {
+        piece.getValidMoves().forEach(function (move) {
+          if (move[0] === king.pos[0] && move[1] === king.pos[1]) {
+            result = true;
+          }
+        });
+      });
+
+      return result;
+    }
+  }, {
+    key: 'getPieceSet',
+    value: function getPieceSet(color) {
+      var pieceSet = [];
+      this.pieces.forEach(function (piece) {
+        if (piece.color === color) {
+          pieceSet.push(piece);
         }
+      });
 
-        var pieceSet = boardState.color === "black" ? that.blackPieces : that.whitePieces;
-        pieceSet.push(piece);
-
-        that.boardState[pieceAttributes.pos[0]][pieceAttributes.pos[1]] = piece;
-        if (pieceAttributes.pieceType === "king") {
-          var king = boardState.color === "black" ? that.blackKing : that.whiteKing;
+      return pieceSet;
+    }
+  }, {
+    key: 'getKing',
+    value: function getKing(color) {
+      var king = null;
+      this.getPieceSet(color).forEach(function (piece) {
+        if (piece.pieceType === "king") {
           king = piece;
         }
       });
+
+      return king;
     }
   }, {
     key: 'findValidMoves',
     value: function findValidMoves(color) {
-      var pieces = color === "black" ? this.blackPieces : this.whitePieces;
-      var king = color === "black" ? this.blackKing : this.whiteKing;
       var validMoves = [];
+      var that = this;
 
-      pieces.forEach(function (piece) {
-        var moves = piece.getValidMoves();
-        moves.forEach(function (move) {
-          validMoves.push(move);
+      this.getPieceSet(color).forEach(function (piece) {
+        piece.getValidMoves().forEach(function (move) {
+          var result = that.tryMove(piece, move, color);
+          if (!result[0]) {
+            validMoves.push({ startPos: result[2], endPos: move });
+          }
+
+          that.undoMove(piece, result[2], result[1], move);
         });
       });
 
       return validMoves;
     }
   }, {
-    key: 'putsInCheck',
+    key: 'tryMove',
+    value: function tryMove(piece, move, color) {
+      var oldPiece = this.board.getBoardLocation(move[0], move[1]);
+      var oldCoords = piece.pos;
 
+      this.board.setBoardLocation(piece, move);
+      this.board.setBoardLocation(null, oldCoords);
+      piece.setLocation(move);
 
-    // takes in a move (oldPos -> newPos) and checks if color is in check after that move
-    value: function putsInCheck(oldPos, newPos, color) {
-      var boardCopy = this.boardState.slice(0);
-      var kingPos = this.color == "black" ? this.blackKing : this.whiteKing;
-      kingPos = kingPos == oldPos ? newPos : kingPos;
+      if (oldPiece) {
+        var idx = this.pieces.indexOf(oldPiece);
+        this.pieces.splice(idx, 1);
+      }
 
-      boardCopy[newPos[0]][newPos[1]] = boardCopy[oldPos[0]][oldPos[1]];
-      boardCopy[oldPos[0]][oldPos[1]] = null;
-      var opposingPieces = color == "black" ? this.whitePieces : this.blackPieces;
-      var that = this;
+      return [this.inCheck(color), oldPiece, oldCoords];
+    }
+  }, {
+    key: 'undoMove',
+    value: function undoMove(piece1, coord1, piece2, coord2) {
+      var _this2 = this;
 
-      // annoyingly verbose in order to avoid checking equality for object id instead of coordinate equality
-      // essentially just checking if any of the opposingPieces can capture the king
-      opposingPieces.forEach(function (piece) {
-        piece.getValidMoves.forEach(function (move) {
-          if (move.startPos[0] === piece.pos[0] && move.startPos[1] === piece.pos[1] && move.endPos[0] === kingPos[0] && move.endPos[1] === kingPos[1]) {
-            return true;
+      this.board.setBoardLocation(piece1, coord1);
+      this.board.setBoardLocation(piece2, coord2);
+      piece1.setLocation(coord1);
+
+      if (piece2) {
+        piece2.setLocation(coord2);
+      }
+
+      [piece1, piece2].forEach(function (piece) {
+        if (piece && !_this2.pieces.includes(piece)) {
+          _this2.pieces.push(piece);
+        }
+      });
+    }
+  }, {
+    key: 'checkBoardForErrors',
+    value: function checkBoardForErrors(boardState) {
+      var errors = [];
+      var colors = ["black", "white"];
+      var pieces = ["pawn", "knight", "bishop", "rook", "queen", "king"];
+
+      if ((typeof boardState === 'undefined' ? 'undefined' : _typeof(boardState)) !== "object" || !boardState.pieces || !colors.includes(boardState.color)) {
+        errors.push("Your initiial condition is the wrong type or it is missing a necessary attribute.");
+      } else if (!Array.isArray(boardState.pieces)) {
+        errors.push("Pieces attribute must be an array.");
+      } else {
+        boardState.pieces.forEach(function (piece, index) {
+          if (!pieces.includes(piece.pieceType) || !colors.includes(piece.color)) {
+            errors.push("There's a problem with the piece at index " + index.toString() + ".");
           }
         });
-      });
-
-      return false;
-    }
-  }, {
-    key: 'validCoordinates',
-    value: function validCoordinates(pos) {
-      return pos[0] < 8 && pos[1] < 8 && pos[0] >= 0 && pos[1] >= 0;
-    }
-  }, {
-    key: 'openSquare',
-    value: function openSquare(pos) {
-      return !this.boardState[pos[0]][pos[1]];
-    }
-  }, {
-    key: 'validCapture',
-
-
-    // this method assumes no obstructing pieces -- that is for Piece.validMoves() to do
-    value: function validCapture(attackPos, preyPos) {
-      var attackPiece = this.boardState[attackPos[0]][attackPos[1]];
-      var preyPiece = this.boardState[preyPos[0]][preyPos[1]];
-
-      if (!attackPiece || !preyPiece) {
-        return false;
-      } else {
-        return attackPiece.color !== preyPiece.color;
       }
+
+      return errors.length > 0 ? errors : false;
     }
   }]);
 
@@ -279,7 +399,7 @@ var ChessGame = function () {
 exports.default = ChessGame;
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -296,38 +416,31 @@ var _util = __webpack_require__(0);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var GameView = function () {
-  function GameView(chessGame, boardContainer, listContainer) {
+  function GameView(chessGame, boardContainer, listContainer, nextButton) {
     _classCallCheck(this, GameView);
 
     this.chessGame = chessGame;
     this.boardContainer = boardContainer;
     this.moveListContainer = listContainer;
-    this.renderInitialBoard();
-    this.renderInitialList();
+    this.nextButton = nextButton;
   }
 
   _createClass(GameView, [{
     key: "renderInitialList",
     value: function renderInitialList() {
-      while (this.moveListContainer.hasChildNodes()) {
-        this.moveListContainer.removeChild(this.moveListContainer.lastChild);
-      }
-
       var listTitle = document.createElement("h2");
       var emptyList = document.createElement("ul");
-      listTitle.text = "Valid Moves";
+      listTitle.textContent = _util.INITIAL_CONDITION.color + "'s valid moves";
+      listTitle.className = "list-header";
+      emptyList.className = "move-list";
       this.moveListContainer.append(listTitle);
       this.moveListContainer.append(emptyList);
     }
   }, {
     key: "renderInitialBoard",
     value: function renderInitialBoard() {
-      while (this.boardContainer.hasChildNodes()) {
-        this.boardContainer.removeChild(this.boardContainer.lastChild);
-      }
-
       var labelRow = document.createElement("ul");
-      labelRow.className = "board-row";
+      labelRow.className = "board-row column-label-row";
 
       for (var k = 1; k <= 8; k++) {
         var columnLabel = document.createElement("li");
@@ -341,6 +454,7 @@ var GameView = function () {
       for (var i = 0; i < 8; i++) {
         var row = document.createElement("ul");
         row.className = "board-row";
+
         var rowLabel = document.createElement("span");
         rowLabel.textContent = _util.LETTERS[i];
         rowLabel.className = "row-label";
@@ -350,16 +464,6 @@ var GameView = function () {
           var square = document.createElement("li");
           square.className = "square " + _util.SQUARE_CLASSES[(i + j) % 2];
           square.id = i.toString() + " " + j.toString();
-
-          var piece = this.chessGame.boardState[i][j];
-          if (piece) {
-            var pieceImg = document.createElement("img");
-            var src = "./icons/" + piece.color + "_" + piece.pieceType + ".svg";
-            pieceImg.src = src;
-            pieceImg.className = "piece-icon";
-            square.append(pieceImg);
-          }
-
           row.append(square);
         }
 
@@ -367,11 +471,30 @@ var GameView = function () {
       }
     }
   }, {
+    key: "renderPieces",
+    value: function renderPieces() {
+      this.chessGame.pieces.forEach(function (piece) {
+        var pieceImg = document.createElement("img");
+        var src = "./icons/" + piece.color + "_" + piece.pieceType + ".svg";
+        pieceImg.src = src;
+        pieceImg.className = "piece-icon";
+        var id = piece.pos[0].toString() + " " + piece.pos[1].toString();
+        var square = document.getElementById(id);
+        square.append(pieceImg);
+      });
+    }
+  }, {
+    key: "renderErrorMessage",
+    value: function renderErrorMessage(error) {
+      console.log(error);
+    }
+  }, {
     key: "renderValidMoves",
     value: function renderValidMoves(color) {
       var _this = this;
 
       var moves = this.chessGame.findValidMoves(color);
+      this.renderMovesAsText(moves);
       moves.forEach(function (move, idx) {
         var startId = move.startPos[0].toString() + " " + move.startPos[1].toString();
         var endId = move.endPos[0].toString() + " " + move.endPos[1].toString();
@@ -383,19 +506,26 @@ var GameView = function () {
         var that = _this;
 
         setTimeout(function () {
-          var newMoveElement = document.createElement("li");
-          var pieceType = that.chessGame.boardState[move.startPos[0]][move.startPos[1]].pieceType;
-          var endCoord = (move.endPos[1] + 1).toString();
-          newMoveElement.textContent = pieceType + " to " + _util.LETTERS[move.endPos[0]] + endCoord;
-          that.moveListContainer.firstChild.append(newMoveElement);
           startSquare.className += " active-square";
           endSquare.className += " active-square";
-        }, 2 * idx * 2000);
+        }, 2 * idx * 1000);
 
         setTimeout(function () {
           startSquare.className = startClass;
           endSquare.className = endClass;
-        }, 2 * idx * 2000 + 2000);
+        }, 2 * idx * 1000 + 1000);
+      });
+    }
+  }, {
+    key: "renderMovesAsText",
+    value: function renderMovesAsText(moves) {
+      var that = this;
+      moves.forEach(function (move) {
+        var newMoveElement = document.createElement("li");
+        var pieceType = that.chessGame.board.getBoardLocation(move.startPos[0], move.startPos[1]).pieceType;
+        var endCoord = (move.endPos[1] + 1).toString();
+        newMoveElement.textContent = pieceType + " to " + _util.LETTERS[move.endPos[0]] + endCoord;
+        that.moveListContainer.lastChild.append(newMoveElement);
       });
     }
   }]);
@@ -406,17 +536,17 @@ var GameView = function () {
 exports.default = GameView;
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _chessGame = __webpack_require__(2);
+var _chessGame = __webpack_require__(3);
 
 var _chessGame2 = _interopRequireDefault(_chessGame);
 
-var _gameView = __webpack_require__(3);
+var _gameView = __webpack_require__(4);
 
 var _gameView2 = _interopRequireDefault(_gameView);
 
@@ -430,19 +560,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
   var chessGame = new _chessGame2.default();
   var gameView = new _gameView2.default(chessGame, boardContainer, listContainer);
+  var errors = chessGame.checkBoardForErrors(_util.INITIAL_CONDITION);
 
-  _util.INITIAL_CONDITIONS.forEach(function (boardState, idx) {
-
-    // setTimeout(function () {
-    chessGame.receiveNewBoard(boardState);
+  if (!errors) {
     gameView.renderInitialBoard();
-    gameView.renderValidMoves(boardState.color);
-    // }, idx*5000);
-  });
+    gameView.renderInitialList();
+    gameView.renderPieces();
+    gameView.renderValidMoves(_util.INITIAL_CONDITION.color);
+  } else {
+    gameView.renderErrorMessage(errors);
+  }
 });
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -454,7 +585,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _piece = __webpack_require__(1);
+var _piece = __webpack_require__(2);
 
 var _piece2 = _interopRequireDefault(_piece);
 
@@ -471,35 +602,83 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var NonRepeatingPiece = function (_Piece) {
   _inherits(NonRepeatingPiece, _Piece);
 
-  function NonRepeatingPiece(pieceType, color, pos, board, hasMoved) {
+  function NonRepeatingPiece(attrs) {
     _classCallCheck(this, NonRepeatingPiece);
 
-    // note: this.hasMoved would be set to false in the constructor if this were a "real" chess game,
-    // but because we're taking in a mid-game board state, we'll sometimes create pieces that have already moved
-    var _this = _possibleConstructorReturn(this, (NonRepeatingPiece.__proto__ || Object.getPrototypeOf(NonRepeatingPiece)).call(this, pieceType, color, pos, board));
+    // because this subclass has the pawn special case, we use this helper to set the direction vectors
+    var _this = _possibleConstructorReturn(this, (NonRepeatingPiece.__proto__ || Object.getPrototypeOf(NonRepeatingPiece)).call(this, attrs));
 
-    _this.hasMoved = hasMoved;
+    _this.setDirectionVectors();
     return _this;
   }
 
   _createClass(NonRepeatingPiece, [{
+    key: 'setDirectionVectors',
+    value: function setDirectionVectors() {
+      var directions = _util.MOVEMENT_VECTORS[this.pieceType];
+
+      // handle those sneaky pawn captures
+      if (this.pieceType === "pawn") {
+        var hasNotMoved = this.color === "black" && this.pos[1] === 1 || this.color === "white" && this.pos[1] === 6;
+        if (hasNotMoved) {
+          directions.push([2, 0]);
+        }
+
+        if (this.color === "white") {
+          directions.forEach(function (direction) {
+            direction[0] *= -1;
+          });
+        }
+      }
+
+      this.directions = directions;
+    }
+  }, {
     key: 'getValidMoves',
     value: function getValidMoves() {
-      var directions = _util.MOVEMENT_VECTORS[this.pieceType];
-      var validMoves = [];
       var that = this;
 
-      directions.forEach(function (direction) {
-        var newCoords = [that.pos[0] + direction[0], that.pos[1] + direction[1]];
-        if (that.chessGame.validCoordinates(newCoords) && (that.chessGame.openSquare(newCoords) || that.chessGame.validCapture(that.pos, newCoords))) {
-          validMoves.push({ startPos: that.pos, endPos: newCoords });
+      switch (this.pieceType) {
+        case "pawn":
+          return this.getPawnMoves();
+          break;
+        default:
+          var validMoves = [];
+          that.directions.forEach(function (direction) {
+            var newX = that.pos[0] + direction[0];
+            var newY = that.pos[1] + direction[1];
+            if (that.board.openSquare(newX, newY) || that.board.validCapture(that.pos, [newX, newY])) {
+              validMoves.push([newX, newY]);
+            }
+          });
+          return validMoves;
+          break;
+      }
+    }
+  }, {
+    key: 'getPawnMoves',
+    value: function getPawnMoves() {
+      var _this2 = this;
+
+      var validMoves = [];
+
+      this.directions.forEach(function (direction) {
+        var newX = _this2.pos[0] + direction[0];
+        var newY = _this2.pos[1] + direction[1];
+
+        if (_this2.board.openSquare(newX, newY)) {
+          validMoves.push([newX, newY]);
         }
       });
 
-      if (this.pieceType === "pawn" && !this.hasMoved) {
-        var newCoords = [this.pos[0], this.pos[1] + 2];
-        validMoves.push({ startPos: this.pos, endPos: newCoords });
-      }
+      var verticalDir = this.directions[0][0];
+      [[verticalDir, 1], [verticalDir, -1]].forEach(function (captureDir) {
+        var newCoords = [_this2.pos[0] + captureDir[0], _this2.pos[1] + captureDir[1]];
+
+        if (_this2.board.validCapture(_this2.pos, newCoords)) {
+          validMoves.push(newCoords);
+        }
+      });
 
       return validMoves;
     }
@@ -511,7 +690,7 @@ var NonRepeatingPiece = function (_Piece) {
 exports.default = NonRepeatingPiece;
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -523,9 +702,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _piece = __webpack_require__(1);
+var _piece = __webpack_require__(2);
 
 var _piece2 = _interopRequireDefault(_piece);
+
+var _board = __webpack_require__(1);
+
+var _board2 = _interopRequireDefault(_board);
 
 var _util = __webpack_require__(0);
 
@@ -540,30 +723,33 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 var RepeatingPiece = function (_Piece) {
   _inherits(RepeatingPiece, _Piece);
 
-  function RepeatingPiece(pieceType, color, pos, chessGame) {
+  function RepeatingPiece(attrs) {
     _classCallCheck(this, RepeatingPiece);
 
-    return _possibleConstructorReturn(this, (RepeatingPiece.__proto__ || Object.getPrototypeOf(RepeatingPiece)).call(this, pieceType, color, pos, chessGame));
+    return _possibleConstructorReturn(this, (RepeatingPiece.__proto__ || Object.getPrototypeOf(RepeatingPiece)).call(this, attrs));
   }
 
   _createClass(RepeatingPiece, [{
     key: 'getValidMoves',
     value: function getValidMoves() {
+      var _this2 = this;
+
       var directions = _util.MOVEMENT_VECTORS[this.pieceType];
       var validMoves = [];
       var that = this;
 
       directions.forEach(function (direction) {
-        var x = that.pos[0];
-        var y = that.pos[1];
-        while (that.chessGame.validCoordinates([x, y]) && that.chessGame.openSquare([x, y])) {
-          validMoves.push({ startPos: that.pos, endPos: [x, y] });
+        var x = _this2.pos[0] + direction[0];
+        var y = _this2.pos[1] + direction[1];
+
+        while (that.board.openSquare(x, y)) {
+          validMoves.push([x, y]);
           x += direction[0];
           y += direction[1];
         }
 
-        if (that.chessGame.validCapture(that.pos, [x, y])) {
-          validMoves.push({ startPos: that.pos, endPos: [x, y] });
+        if (that.board.validCapture(that.pos, [x, y])) {
+          validMoves.push([x, y]);
         }
       });
 

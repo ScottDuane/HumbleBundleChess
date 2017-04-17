@@ -1,23 +1,7 @@
-.gameboard-container {
-  display: flex;
-  flex-flow: column;
-}
-
-.board-row {
+body {
   display: flex;
   flex-flow: row;
-}
-
-
-.row-label {
-  width: 70px;
-  text-align: center;
-}
-
-.column-label {
-  width: 70px;
-  padding-top: 30px;
-  margin-right: 2px;
+  font-family: 'Asar', serif;
 }
 
 ul {
@@ -25,22 +9,76 @@ ul {
   margin: 0;
 }
 
+.gameboard-container {
+  display: flex;
+  flex-flow: column;
+}
+
+.move-list-container {
+  font-family:
+}
+
+.list-header {
+  margin-left: 40px;
+}
+
+.move-list li {
+  width: 110px;
+}
+
+.move-list {
+  list-style: none;
+  font-size: 16px;
+  display: flex;
+  flex-flow: column;
+  flex-wrap: wrap;
+  max-height: 250px;
+}
+
+.error-list {
+
+}
+
+.board-row {
+  display: flex;
+  flex-flow: row;
+}
+
+.row-label {
+  width: 25px;
+  padding-top: 20px;
+  text-align: center;
+}
+
+.column-label-row {
+  margin-left: 55px;
+}
+
+.column-label {
+  width: 70px;
+  padding-top: 30px;
+}
+
+.error-list-container {
+  display: none;
+}
+
 .square {
   width: 70px;
   height: 70px;
-  transition: background-color 800ms linear 800ms;
+  transition: background-color 400ms linear 400ms;
 }
 
 .black-square {
-  background-color: rgba(158, 158, 158, 0.91);
+  background-color: rgba(121, 29, 29, 0.79);
 }
 
 .white-square {
-  background-color: rgba(158, 158, 158, 0.18);
+  background-color: rgba(158, 158, 158, 0.9);
 }
 
 .active-square {
-  background-color: magenta;
+  background-color: rgba(83, 70, 203, 0.76);
 }
 
 .piece-icon {
