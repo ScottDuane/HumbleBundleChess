@@ -1,3 +1,8 @@
+body {
+  display: flex;
+  flex-flow: row;
+}
+
 .gameboard-container {
   display: flex;
   flex-flow: column;
@@ -28,19 +33,19 @@ ul {
 .square {
   width: 70px;
   height: 70px;
-  transition: background-color 800ms linear 800ms;
+  transition: background-color 400ms linear 400ms;
 }
 
 .black-square {
-  background-color: rgba(158, 158, 158, 0.91);
+  background-color: rgba(121, 29, 29, 0.79);
 }
 
 .white-square {
-  background-color: rgba(158, 158, 158, 0.18);
+  background-color: rgba(158, 158, 158, 0.9);
 }
 
 .active-square {
-  background-color: magenta;
+  background-color: rgba(83, 70, 203, 0.76);
 }
 
 .piece-icon {

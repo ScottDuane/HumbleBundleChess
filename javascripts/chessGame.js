@@ -1,109 +1,132 @@
+import Board from './board';
 import NonRepeatingPiece from './pieces/nonRepeatingPiece';
 import RepeatingPiece from './pieces/repeatingPiece';
-import { IS_REPEATING } from './util';
+import { IS_REPEATING, INITIAL_CONDITION } from './util';
 
 class ChessGame {
-  constructor () {
-    this.boardState = [];
-    this.resetBoard();
+  constructor (gameView) {
+    this.board = new Board();
+    this.pieces = [];
+    this.gameView = gameView;
+    this.parseInitialCondition();
   };
 
-  resetBoard () {
-    this.whitePieces = [];
-    this.blackPieces = [];
-    this.blackKing = null;
-    this.whiteKing = null;
-    this.boardState = [];
-
-    for (let i=0; i<8; i++) {
-      this.boardState.push([]);
-      for (let j=0; j<8; j++) {
-        this.boardState[i].push(null);
-      };
-    };
+  parseInitialCondition () {
+    // refactor error handling
+    INITIAL_CONDITION.pieces.forEach((pieceInfo) => {
+      pieceInfo.board = this.board;
+      let piece = IS_REPEATING[pieceInfo.pieceType] ? new RepeatingPiece(pieceInfo) : new NonRepeatingPiece(pieceInfo);
+      this.pieces.push(piece);
+      this.board.setBoardLocation(piece, pieceInfo.pos);
+    });
   };
 
-  receiveNewBoard(boardState) {
-      this.resetBoard();
-      let that = this;
-      boardState.pieces.forEach((pieceAttributes) => {
-        let piece = null;
+  inCheck (color) {
+    let king = this.getKing(color);
+    let oppColor = color === "white" ? "black" : "white";
+    let result = false;
 
-        if (IS_REPEATING[pieceAttributes.pieceType]) {
-          piece = new RepeatingPiece(pieceAttributes.pieceType, pieceAttributes.color, pieceAttributes.pos, that);
-        } else {
-          piece = new NonRepeatingPiece(pieceAttributes.pieceType, pieceAttributes.color, pieceAttributes.pos, that)
-        }
-
-        let pieceSet = boardState.color === "black" ? that.blackPieces : that.whitePieces;
-        pieceSet.push(piece);
-
-        that.boardState[pieceAttributes.pos[0]][pieceAttributes.pos[1]] = piece;
-        if (pieceAttributes.pieceType === "king") {
-          let king = boardState.color === "black" ? that.blackKing : that.whiteKing;
-          king = piece;
+    this.getPieceSet(oppColor).forEach((piece) => {
+      piece.getValidMoves().forEach((move) => {
+        if (move[0] === king.pos[0] && move[1] === king.pos[1]) {
+          result = true;
         }
       });
+    });
+
+    return result;
   };
 
-  findValidMoves(color) {
-    let pieces = color === "black" ? this.blackPieces : this.whitePieces;
-    let king = color === "black" ? this.blackKing : this.whiteKing;
-    let validMoves = [];
+  getPieceSet (color) {
+    let pieceSet = [];
+    this.pieces.forEach((piece) => {
+      if (piece.color === color) {
+        pieceSet.push(piece);
+      }
+    });
 
-    pieces.forEach((piece) => {
-      let moves = piece.getValidMoves();
-      moves.forEach((move) => {
-        validMoves.push(move);
+    return pieceSet;
+  };
+
+  getKing(color) {
+    let king = null;
+    this.getPieceSet(color).forEach((piece) => {
+      if (piece.pieceType === "king") {
+        king = piece;
+      }
+    });
+
+    return king;
+  };
+
+  findValidMoves (color) {
+    let validMoves = [];
+    let that = this;
+
+    this.getPieceSet(color).forEach((piece) => {
+      piece.getValidMoves().forEach((move) => {
+        let result = that.tryMove(piece, move, color);
+        if(!result[0]) {
+          validMoves.push( { startPos: result[2], endPos: move } );
+        }
+
+        that.undoMove(piece, result[2], result[1], move);
       });
     });
 
     return validMoves;
   };
 
-  // takes in a move (oldPos -> newPos) and checks if color is in check after that move
-  putsInCheck(oldPos, newPos, color) {
-    let boardCopy = this.boardState.slice(0);
-    let kingPos = this.color == "black" ? this.blackKing : this.whiteKing;
-    kingPos = kingPos == oldPos ? newPos : kingPos;
+  tryMove (piece, move, color) {
+    let oldPiece = this.board.getBoardLocation(move[0], move[1]);
+    let oldCoords = piece.pos;
 
-    boardCopy[newPos[0]][newPos[1]] = boardCopy[oldPos[0]][oldPos[1]];
-    boardCopy[oldPos[0]][oldPos[1]] = null;
-    let opposingPieces = color == "black" ? this.whitePieces : this.blackPieces;
-    let that = this;
+    this.board.setBoardLocation(piece, move);
+    this.board.setBoardLocation(null, oldCoords);
+    piece.setLocation(move);
 
-    // annoyingly verbose in order to avoid checking equality for object id instead of coordinate equality
-    // essentially just checking if any of the opposingPieces can capture the king
-    opposingPieces.forEach((piece) => {
-      piece.getValidMoves.forEach((move) => {
-        if ((move.startPos[0] === piece.pos[0] && move.startPos[1] === piece.pos[1]) &&
-            (move.endPos[0] === kingPos[0] && move.endPos[1] === kingPos[1])) {
-          return true;
-        }
-      })
-    });
-
-    return false;
-  };
-
-  validCoordinates(pos) {
-    return (pos[0] < 8 && pos[1] < 8) && (pos[0] >= 0 && pos[1] >= 0);
-  };
-
-  openSquare(pos) {
-    return !this.boardState[pos[0]][pos[1]];
-  };
-
-  // this method assumes no obstructing pieces -- that is for Piece.validMoves() to do
-  validCapture(attackPos, preyPos) {
-    let attackPiece = this.boardState[attackPos[0]][attackPos[1]];
-    let preyPiece = this.boardState[preyPos[0]][preyPos[1]];
-
-    if (!attackPiece || !preyPiece) {
-      return false;
-    } else {
-      return attackPiece.color !== preyPiece.color;
+    if (oldPiece) {
+      let idx = this.pieces.indexOf(oldPiece);
+      this.pieces.splice(idx, 1);
     }
+
+    return [this.inCheck(color), oldPiece, oldCoords];
+  };
+
+  undoMove(piece1, coord1, piece2, coord2) {
+    this.board.setBoardLocation(piece1, coord1);
+    this.board.setBoardLocation(piece2, coord2);
+    piece1.setLocation(coord1);
+
+    if (piece2) {
+      piece2.setLocation(coord2);
+    }
+
+    [piece1, piece2].forEach((piece) => {
+      if (piece && !this.pieces.includes(piece)) {
+        this.pieces.push(piece);
+      }
+    });
+  };
+
+  checkBoardForErrors(boardState) {
+    let errors = [];
+    let colors = ["black", "white"];
+    let pieces = ["pawn", "knight", "bishop", "rook", "queen", "king"];
+
+    if ((typeof(boardState) !== "object"|| !boardState.pieces)|| !colors.includes(boardState.color)) {
+      errors.push("Your initiial condition is the wrong type or it is missing a necessary attribute.");
+    } else if (!Array.isArray(boardState.pieces)){
+      errors.push("Pieces attribute must be an array.");
+    } else {
+      boardState.pieces.forEach((piece, index) => {
+        if (!pieces.includes(piece.pieceType) || !colors.includes(piece.color)) {
+          errors.push("There's a problem with the piece at index " + index.toString() + ".");
+        }
+      });
+    }
+
+    return errors.length > 0 ? errors : false;
   };
 }
 

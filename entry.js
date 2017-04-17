@@ -1,6 +1,6 @@
 import ChessGame from './javascripts/chessGame';
 import GameView from './javascripts/gameView';
-import { INITIAL_CONDITIONS } from './javascripts/util';
+import { INITIAL_CONDITION } from './javascripts/util';
 
 document.addEventListener('DOMContentLoaded', () => {
   let boardContainer = document.getElementById('gameboard-container');
@@ -8,13 +8,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let chessGame = new ChessGame();
   let gameView = new GameView(chessGame, boardContainer, listContainer);
+  let errors = chessGame.checkBoardForErrors(INITIAL_CONDITION);
 
-  INITIAL_CONDITIONS.forEach(function (boardState, idx) {
-
-    // setTimeout(function () {
-      chessGame.receiveNewBoard(boardState);
+  if (!errors) {
       gameView.renderInitialBoard();
-      gameView.renderValidMoves(boardState.color);
-    // }, idx*5000);
-  });
+      gameView.renderInitialList();
+      gameView.renderPieces();
+      gameView.renderValidMoves(INITIAL_CONDITION.color);
+
+  } else {
+    gameView.renderErrorMessage(errors);
+  }
 });

@@ -2,31 +2,75 @@ import Piece from './piece';
 import { MOVEMENT_VECTORS } from '../util';
 
 class NonRepeatingPiece extends Piece {
-  constructor (pieceType, color, pos, board, hasMoved) {
-    super(pieceType, color, pos, board);
+  constructor (attrs) {
+    super(attrs);
 
-    // note: this.hasMoved would be set to false in the constructor if this were a "real" chess game,
-    // but because we're taking in a mid-game board state, we'll sometimes create pieces that have already moved
-    this.hasMoved = hasMoved;
+    // because this subclass has the pawn special case, we use this helper to set the direction vectors
+    this.setDirectionVectors();
+  };
+
+  setDirectionVectors() {
+    let directions = MOVEMENT_VECTORS[this.pieceType];
+
+    // handle those sneaky pawn captures
+    if (this.pieceType === "pawn") {
+      let hasNotMoved = (this.color === "black" && this.pos[1] === 1) ||
+                        (this.color === "white" && this.pos[1] === 6);
+      if (hasNotMoved) {
+        directions.push([2, 0]);
+      }
+
+      if (this.color === "white") {
+        directions.forEach((direction) => {
+          direction[0] *= -1;
+        });
+      }
+    }
+
+    this.directions = directions;
   };
 
   getValidMoves () {
-    let directions = MOVEMENT_VECTORS[this.pieceType];
-    let validMoves = [];
     let that = this;
 
-    directions.forEach((direction) => {
-      let newCoords = [that.pos[0] + direction[0], that.pos[1] + direction[1]];
-      if (that.chessGame.validCoordinates(newCoords) &&
-         (that.chessGame.openSquare(newCoords) || that.chessGame.validCapture(that.pos, newCoords))) {
-        validMoves.push( { startPos: that.pos, endPos: newCoords } );
+    switch (this.pieceType) {
+      case "pawn":
+        return this.getPawnMoves();
+        break;
+      default:
+        let validMoves = [];
+        that.directions.forEach((direction) => {
+          let newX = that.pos[0] + direction[0];
+          let newY = that.pos[1] + direction[1];
+          if (that.board.openSquare(newX, newY) || that.board.validCapture(that.pos, [newX, newY])) {
+            validMoves.push([newX, newY]);
+          }
+        });
+        return validMoves;
+        break;
+    }
+  };
+
+  getPawnMoves () {
+    let validMoves = [];
+
+    this.directions.forEach((direction) => {
+      let newX = this.pos[0] + direction[0];
+      let newY = this.pos[1] + direction[1];
+
+      if (this.board.openSquare(newX, newY)) {
+        validMoves.push([newX, newY]);
       }
     });
 
-    if (this.pieceType === "pawn" && !this.hasMoved) {
-      let newCoords = [this.pos[0], this.pos[1] + 2];
-      validMoves.push({ startPos: this.pos, endPos: newCoords });
-    }
+    let verticalDir = this.directions[0][0];
+    [[verticalDir, 1], [verticalDir, -1]].forEach((captureDir) => {
+      let newCoords = [this.pos[0] + captureDir[0], this.pos[1] + captureDir[1]];
+
+      if (this.board.validCapture(this.pos, newCoords)) {
+        validMoves.push(newCoords);
+      }
+    });
 
     return validMoves;
   }

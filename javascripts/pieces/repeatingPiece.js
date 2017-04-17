@@ -1,9 +1,10 @@
 import Piece from './piece';
+import Board from '../board';
 import { MOVEMENT_VECTORS } from '../util';
 
 class RepeatingPiece extends Piece {
-  constructor (pieceType, color, pos, chessGame) {
-    super(pieceType, color, pos, chessGame);
+  constructor (attrs) {
+    super(attrs);
   };
 
   getValidMoves() {
@@ -12,16 +13,17 @@ class RepeatingPiece extends Piece {
     let that = this;
 
     directions.forEach((direction) => {
-      let x = that.pos[0];
-      let y = that.pos[1];
-      while (that.chessGame.validCoordinates([x, y]) && that.chessGame.openSquare([x, y])) {
-        validMoves.push({ startPos: that.pos, endPos: [x, y] });
+      let x = this.pos[0] + direction[0];
+      let y = this.pos[1] + direction[1];
+
+      while (that.board.openSquare(x, y)) {
+        validMoves.push([x, y]);
         x += direction[0];
         y += direction[1];
       }
 
-      if (that.chessGame.validCapture(that.pos, [x, y])) {
-        validMoves.push({ startPos: that.pos, endPos: [x, y] });
+      if (that.board.validCapture(that.pos, [x, y])) {
+        validMoves.push([x, y]);
       }
     });
 
