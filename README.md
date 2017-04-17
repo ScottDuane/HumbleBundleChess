@@ -1,6 +1,6 @@
 ## Humble Bundle Chess
 
-**[View Live Demo][https://scottduane.github.io/HumbleBundleChess]**
+**[View Live Demo](https://scottduane.github.io/HumbleBundleChess)**
 
 This repo builds the outline of a chess game, taking a snapshot of a board and rendering all legal moves for a given color.  The link above demonstrates using a built-in initial board. To alter the initial board, do the following:
 
@@ -8,12 +8,12 @@ This repo builds the outline of a chess game, taking a snapshot of a board and r
 2. Go to the `javascripts/util.js` file and change the value of `const INITIAL_CONDITION`, using the format below to pass in the pieces and the color of the player whose turn is next.  
 
 ```javascript
-                          { pieces: [{ pieceType: "king", color: "white", pos: [0, 0] },
-                                     { pieceType: "king", color: "black", pos: [7, 7] },
-                                     { pieceType: "knight", color: "white", pos: [1, 1] },
-                                     { pieceType: "bishop", color: "black", pos: [2, 2] }
-                                    ],
-                            color: "white"};
+  const INITIAL_CONDITION = { pieces: [{ pieceType: "king", color: "white", pos: [0, 0] },
+                                       { pieceType: "king", color: "black", pos: [7, 7] },
+                                       { pieceType: "knight", color: "white", pos: [1, 1] },
+                                       { pieceType: "bishop", color: "black", pos: [2, 2] }
+                                      ],
+                              color: "white"};
 ```
 
 3. Copy the path for `index.html` into your browser to see the board and valid moves render.
