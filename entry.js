@@ -5,12 +5,14 @@ import { INITIAL_CONDITION } from './javascripts/util';
 document.addEventListener('DOMContentLoaded', () => {
   let boardContainer = document.getElementById('gameboard-container');
   let listContainer = document.getElementById('move-list-container');
+  let errorContainer = document.getElementById('error-list-container');
 
   let chessGame = new ChessGame();
-  let gameView = new GameView(chessGame, boardContainer, listContainer);
+  let gameView = new GameView(chessGame, boardContainer, listContainer, errorContainer);
   let errors = chessGame.checkBoardForErrors(INITIAL_CONDITION);
 
   if (!errors) {
+    chessGame.parseInitialCondition();
     gameView.renderInitialBoard();
     gameView.renderInitialList();
     gameView.renderPieces();

@@ -11,11 +11,6 @@ const INITIAL_CONDITION = { pieces: [{ pieceType: "knight", color: "white", pos:
                                    ],
                             color: "white" };
 
-const INITIAL_CONDITION_2 = { pieces: [{ pieceType: "king", color: "white", pos: [0, 0] },
-                                     { pieceType: "king", color: "black", pos: [7, 7] },
-                                     { pieceType: "knight", color: "white", pos: [1, 1] },
-                                     { pieceType: "bishop", color: "black", pos: [2, 2] }], color: "white"};
-
 const MOVEMENT_VECTORS = { "pawn": [[1, 0]],
                             "knight": [[1, 2], [-1, 2], [2, 1], [-2, 1], [1, -2], [-1, -2], [-2, -1], [2, -1]],
                             "bishop": [[1, 1], [1, -1], [-1, 1], [-1, -1]],
@@ -26,12 +21,16 @@ const MOVEMENT_VECTORS = { "pawn": [[1, 0]],
 const SQUARE_CLASSES = ["white-square", "black-square"];
 
 const IS_REPEATING = { pawn: false,
-                              knight: false,
-                              bishop: true,
-                              rook: true,
-                              queen: true,
-                              king: false }
+                       knight: false,
+                       bishop: true,
+                       rook: true,
+                       queen: true,
+                       king: false }
+
+const PIECES = ["pawn", "knight", "bishop", "rook", "queen", "king"];
+
+const COLORS = ["black", "white"];
 
 const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
-export { INITIAL_CONDITION, MOVEMENT_VECTORS, SQUARE_CLASSES, IS_REPEATING, LETTERS };
+export { INITIAL_CONDITION, MOVEMENT_VECTORS, SQUARE_CLASSES, IS_REPEATING, LETTERS, COLORS, PIECES };

@@ -1,11 +1,11 @@
 import { SQUARE_CLASSES, LETTERS, INITIAL_CONDITION } from './util';
 
 class GameView  {
-  constructor (chessGame, boardContainer, listContainer, nextButton) {
+  constructor (chessGame, boardContainer, moveListContainer, errorContainer) {
     this.chessGame = chessGame;
     this.boardContainer = boardContainer;
-    this.moveListContainer = listContainer;
-    this.nextButton = nextButton;
+    this.moveListContainer = moveListContainer;
+    this.errorContainer = errorContainer;
   };
 
   renderInitialList() {
@@ -63,8 +63,19 @@ class GameView  {
     })
   };
 
-  renderErrorMessage(error) {
-    console.log(error);
+  renderErrorMessage(errors) {
+    let errorHeader = document.createElement("h2");
+    errorHeader.textContent = "Oh no! There was a problem with your input.";
+    let errorList = document.createElement("ul");
+
+    errors.forEach((error) => {
+      let errorItem = document.createElement("li");
+      errorItem.textContent = error;
+      errorList.append(errorItem);
+    });
+
+    this.errorContainer.append(errorHeader);
+    this.errorContainer.append(errorList);
   };
 
   renderValidMoves(color) {

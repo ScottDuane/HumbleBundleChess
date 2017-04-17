@@ -1,7 +1,7 @@
 class Piece {
   constructor (attrs) {
-    this.color = attrs.color;
-    this.pieceType = attrs.pieceType;
+    this.color = attrs.color.toLowerCase();
+    this.pieceType = attrs.pieceType.toLowerCase();
     this.pos = attrs.pos;
     this.board = attrs.board;
   };

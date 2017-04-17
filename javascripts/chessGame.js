@@ -1,20 +1,20 @@
 import Board from './board';
 import NonRepeatingPiece from './pieces/nonRepeatingPiece';
 import RepeatingPiece from './pieces/repeatingPiece';
-import { IS_REPEATING, INITIAL_CONDITION } from './util';
+import { IS_REPEATING, INITIAL_CONDITION, COLORS, PIECES } from './util';
 
 class ChessGame {
   constructor (gameView) {
     this.board = new Board();
     this.pieces = [];
     this.gameView = gameView;
-    this.parseInitialCondition();
+  //  this.parseInitialCondition();
   };
 
   parseInitialCondition () {
     INITIAL_CONDITION.pieces.forEach((pieceInfo) => {
       pieceInfo.board = this.board;
-      let piece = IS_REPEATING[pieceInfo.pieceType] ? new RepeatingPiece(pieceInfo) : new NonRepeatingPiece(pieceInfo);
+      let piece = IS_REPEATING[pieceInfo.pieceType.toLowerCase()] ? new RepeatingPiece(pieceInfo) : new NonRepeatingPiece(pieceInfo);
       this.pieces.push(piece);
       this.board.setBoardLocation(piece, pieceInfo.pos);
     });
@@ -110,16 +110,18 @@ class ChessGame {
 
   checkBoardForErrors(boardState) {
     let errors = [];
-    let colors = ["black", "white"];
-    let pieces = ["pawn", "knight", "bishop", "rook", "queen", "king"];
 
-    if ((typeof(boardState) !== "object"|| !boardState.pieces)|| !colors.includes(boardState.color)) {
-      errors.push("Your initiial condition is the wrong type or it is missing a necessary attribute.");
+    if ((typeof(boardState) !== "object" ||
+         !boardState.pieces) ||
+         !COLORS.includes(boardState.color.toLowerCase())) {
+      errors.push("Your initial condition is the wrong type or it is missing a necessary attribute.");
     } else if (!Array.isArray(boardState.pieces)){
       errors.push("Pieces attribute must be an array.");
     } else {
       boardState.pieces.forEach((piece, index) => {
-        if (!pieces.includes(piece.pieceType) || !colors.includes(piece.color)) {
+        if ((!PIECES.includes(piece.pieceType.toLowerCase()) ||
+            !COLORS.includes(piece.color.toLowerCase())) ||
+            !this.board.validCoordinates(piece.pos[0], piece.pos[1])) {
           errors.push("There's a problem with the piece at index " + index.toString() + ".");
         }
       });

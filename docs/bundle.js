@@ -74,28 +74,30 @@
 
 
 Object.defineProperty(exports, "__esModule", {
-                                     value: true
+                       value: true
 });
 var INITIAL_CONDITION = { pieces: [{ pieceType: "knight", color: "white", pos: [0, 0] }, { pieceType: "rook", color: "black", pos: [0, 4] }, { pieceType: "king", color: "black", pos: [0, 7] }, { pieceType: "rook", color: "white", pos: [1, 5] }, { pieceType: "pawn", color: "black", pos: [1, 6] }, { pieceType: "pawn", color: "white", pos: [2, 5] }, { pieceType: "pawn", color: "black", pos: [2, 7] }, { pieceType: "bishop", color: "white", pos: [4, 7] }, { pieceType: "queen", color: "white", pos: [6, 4] }, { pieceType: "king", color: "white", pos: [7, 4] }],
-                                     color: "white" };
-
-var INITIAL_CONDITION_2 = { pieces: [{ pieceType: "king", color: "white", pos: [0, 0] }, { pieceType: "king", color: "black", pos: [7, 7] }, { pieceType: "knight", color: "white", pos: [1, 1] }, { pieceType: "bishop", color: "black", pos: [2, 2] }], color: "white" };
+                       color: "white" };
 
 var MOVEMENT_VECTORS = { "pawn": [[1, 0]],
-                                     "knight": [[1, 2], [-1, 2], [2, 1], [-2, 1], [1, -2], [-1, -2], [-2, -1], [2, -1]],
-                                     "bishop": [[1, 1], [1, -1], [-1, 1], [-1, -1]],
-                                     "rook": [[1, 0], [0, 1], [-1, 0], [0, -1]],
-                                     "queen": [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]],
-                                     "king": [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]] };
+                       "knight": [[1, 2], [-1, 2], [2, 1], [-2, 1], [1, -2], [-1, -2], [-2, -1], [2, -1]],
+                       "bishop": [[1, 1], [1, -1], [-1, 1], [-1, -1]],
+                       "rook": [[1, 0], [0, 1], [-1, 0], [0, -1]],
+                       "queen": [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]],
+                       "king": [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]] };
 
 var SQUARE_CLASSES = ["white-square", "black-square"];
 
 var IS_REPEATING = { pawn: false,
-                                     knight: false,
-                                     bishop: true,
-                                     rook: true,
-                                     queen: true,
-                                     king: false };
+                       knight: false,
+                       bishop: true,
+                       rook: true,
+                       queen: true,
+                       king: false };
+
+var PIECES = ["pawn", "knight", "bishop", "rook", "queen", "king"];
+
+var COLORS = ["black", "white"];
 
 var LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
@@ -104,6 +106,8 @@ exports.MOVEMENT_VECTORS = MOVEMENT_VECTORS;
 exports.SQUARE_CLASSES = SQUARE_CLASSES;
 exports.IS_REPEATING = IS_REPEATING;
 exports.LETTERS = LETTERS;
+exports.COLORS = COLORS;
+exports.PIECES = PIECES;
 
 /***/ }),
 /* 1 */
@@ -199,8 +203,8 @@ var Piece = function () {
   function Piece(attrs) {
     _classCallCheck(this, Piece);
 
-    this.color = attrs.color;
-    this.pieceType = attrs.pieceType;
+    this.color = attrs.color.toLowerCase();
+    this.pieceType = attrs.pieceType.toLowerCase();
     this.pos = attrs.pos;
     this.board = attrs.board;
   }
@@ -259,7 +263,7 @@ var ChessGame = function () {
     this.board = new _board2.default();
     this.pieces = [];
     this.gameView = gameView;
-    this.parseInitialCondition();
+    //  this.parseInitialCondition();
   }
 
   _createClass(ChessGame, [{
@@ -269,7 +273,7 @@ var ChessGame = function () {
 
       _util.INITIAL_CONDITION.pieces.forEach(function (pieceInfo) {
         pieceInfo.board = _this.board;
-        var piece = _util.IS_REPEATING[pieceInfo.pieceType] ? new _repeatingPiece2.default(pieceInfo) : new _nonRepeatingPiece2.default(pieceInfo);
+        var piece = _util.IS_REPEATING[pieceInfo.pieceType.toLowerCase()] ? new _repeatingPiece2.default(pieceInfo) : new _nonRepeatingPiece2.default(pieceInfo);
         _this.pieces.push(piece);
         _this.board.setBoardLocation(piece, pieceInfo.pos);
       });
@@ -373,17 +377,17 @@ var ChessGame = function () {
   }, {
     key: 'checkBoardForErrors',
     value: function checkBoardForErrors(boardState) {
-      var errors = [];
-      var colors = ["black", "white"];
-      var pieces = ["pawn", "knight", "bishop", "rook", "queen", "king"];
+      var _this3 = this;
 
-      if ((typeof boardState === 'undefined' ? 'undefined' : _typeof(boardState)) !== "object" || !boardState.pieces || !colors.includes(boardState.color)) {
-        errors.push("Your initiial condition is the wrong type or it is missing a necessary attribute.");
+      var errors = [];
+
+      if ((typeof boardState === 'undefined' ? 'undefined' : _typeof(boardState)) !== "object" || !boardState.pieces || !_util.COLORS.includes(boardState.color.toLowerCase())) {
+        errors.push("Your initial condition is the wrong type or it is missing a necessary attribute.");
       } else if (!Array.isArray(boardState.pieces)) {
         errors.push("Pieces attribute must be an array.");
       } else {
         boardState.pieces.forEach(function (piece, index) {
-          if (!pieces.includes(piece.pieceType) || !colors.includes(piece.color)) {
+          if (!_util.PIECES.includes(piece.pieceType.toLowerCase()) || !_util.COLORS.includes(piece.color.toLowerCase()) || !_this3.board.validCoordinates(piece.pos[0], piece.pos[1])) {
             errors.push("There's a problem with the piece at index " + index.toString() + ".");
           }
         });
@@ -416,13 +420,13 @@ var _util = __webpack_require__(0);
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var GameView = function () {
-  function GameView(chessGame, boardContainer, listContainer, nextButton) {
+  function GameView(chessGame, boardContainer, moveListContainer, errorContainer) {
     _classCallCheck(this, GameView);
 
     this.chessGame = chessGame;
     this.boardContainer = boardContainer;
-    this.moveListContainer = listContainer;
-    this.nextButton = nextButton;
+    this.moveListContainer = moveListContainer;
+    this.errorContainer = errorContainer;
   }
 
   _createClass(GameView, [{
@@ -485,8 +489,19 @@ var GameView = function () {
     }
   }, {
     key: "renderErrorMessage",
-    value: function renderErrorMessage(error) {
-      console.log(error);
+    value: function renderErrorMessage(errors) {
+      var errorHeader = document.createElement("h2");
+      errorHeader.textContent = "Oh no! There was a problem with your input.";
+      var errorList = document.createElement("ul");
+
+      errors.forEach(function (error) {
+        var errorItem = document.createElement("li");
+        errorItem.textContent = error;
+        errorList.append(errorItem);
+      });
+
+      this.errorContainer.append(errorHeader);
+      this.errorContainer.append(errorList);
     }
   }, {
     key: "renderValidMoves",
@@ -557,12 +572,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 document.addEventListener('DOMContentLoaded', function () {
   var boardContainer = document.getElementById('gameboard-container');
   var listContainer = document.getElementById('move-list-container');
+  var errorContainer = document.getElementById('error-list-container');
 
   var chessGame = new _chessGame2.default();
-  var gameView = new _gameView2.default(chessGame, boardContainer, listContainer);
+  var gameView = new _gameView2.default(chessGame, boardContainer, listContainer, errorContainer);
   var errors = chessGame.checkBoardForErrors(_util.INITIAL_CONDITION);
 
   if (!errors) {
+    chessGame.parseInitialCondition();
     gameView.renderInitialBoard();
     gameView.renderInitialList();
     gameView.renderPieces();
